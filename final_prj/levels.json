@@ -1,0 +1,99 @@
+{
+    "levels": {
+        "rome": {
+            "bckground_objs": [
+                {
+                "name": "colosseo",
+                "file_obj": "colosseo",
+                "texture": "colosseo.png",
+                "posizione": { "x": 0, "y": 0, "z": 0 },
+                "rotazione": { "x": 90, "y": 90, "z": 90 },
+                "scaling": 1.5
+                }
+            ]
+        },
+        "venice": {
+            "bckground_objs": [
+                {
+                "name": "ponte_rialto",
+                "file_obj": "ponte_rialto.obj",
+                "texture": "ponte_rialto.jpg",
+                "posizione": { "x": 0, "y": 0, "z": 0 },
+                "rotazione": { "x": 0, "y": 0, "z": 0 },
+                "scaling": 2
+                },
+                {
+                "name": "skyscrapers",
+                "file_obj": "asian_city",
+                "texture": "grattacielo_texture.jpg",
+                "posizione": { "x": -15, "y": 0, "z": 5 },
+                "rotazione": { "x": 0, "y": 0, "z": 0 },
+                "scaling": 1
+                },
+                {
+                "name": "ocean",
+                "file_obj": "ocean",
+                "texture": "san2.jpg",
+                "posizione": { "x": 0, "y": -1, "z": 0},
+                "rotazione": { "x": 0, "y": 0, "z": 0 },
+                "scaling": 10
+                }
+            ]
+        },
+        "new_york": {
+            "bckground_objs": [
+                {
+                "name": "liberty_statue",
+                "file_obj": "liberty2",
+                "texture": "Liberty_tex.bmp",
+                "posizione": { "x": 0.5, "y": -0.1, "z": 0.5},
+                "rotazione": { "x": 0, "y": 195, "z": 0 },
+                "scaling": 0.8
+                }
+                
+            ]
+        },
+        "il_cairo": {
+            "bckground_objs": [
+                {
+                "name": "pyramid1",
+                "file_obj": "pyramid",
+                "texture": "720.jpg",
+                "posizione": { "x": 0.8, "y": 0, "z": 1},
+                "rotazione": { "x": 0, "y": 90, "z": 0 },
+                "scaling": 0.5
+                },
+                {
+                "name": "pyramid2",
+                "file_obj": "pyramid",
+                "texture": "720.jpg",
+                "posizione": { "x": 0.0, "y": 0, "z": 1},
+                "rotazione": { "x": 0, "y": 270, "z": 0 },
+                "scaling": 1
+                },
+                {
+                "name": "pyramid3",
+                "file_obj": "pyramid",
+                "texture": "720.jpg",
+                "posizione": { "x": -0.8, "y": 0, "z": 1},
+                "rotazione": { "x": 0, "y": 180, "z": 0 },
+                "scaling": 0.5
+                },
+                {
+                "name": "skybox",
+                "file_obj": "box",
+                "texture": "back.png",
+                "posizione": { "x": 0, "y": 0, "z": -1 },
+                "rotazione": { "x": 0, "y": 0, "z": 0 },
+                "scaling": 3
+                }
+                
+            ]
+        },
+        "starry_night": {
+            "bckground_objs": [
+                
+            ]
+        }
+    }
+}
