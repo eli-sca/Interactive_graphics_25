@@ -66,11 +66,7 @@ class Matrix {
     }
 
     div_scalar(scalar){
-        let res = [];
-        for (let i = 0; i < this.data.length; i++) {
-            res.push(this.data[i] / scalar);
-        }
-        return new this.constructor(res, this.rows, this.cols);return this.mult_scalar(1 / scalar);
+        return this.mult_scalar(1 / scalar);
     }
 
     traspose(){
@@ -133,6 +129,10 @@ class Vector extends Matrix {
     }
 
     normalize(){
+        let n = this.norm();
+        if (n == 0) {
+            throw new Error("Error: Vector of norm 0, can't normalize");
+        }
         return this.mult_scalar(1/this.norm());
     }
 
@@ -201,7 +201,7 @@ class Rotation extends Matrix {
             data = [ctheta, -stheta, 0, 0, stheta, ctheta, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
         }
         else {
-            norm = axis.norm();
+            let norm = axis.norm();
             if (norm == 0) {
                 throw new Error("Error: Axis of norm 0, can't rotate");
             }
@@ -209,6 +209,8 @@ class Rotation extends Matrix {
                 axis = axis.normalize();
                 console.log("Axis of norm different from 1, used normalized axis: ",axis);
             }
+
+            throw new Error("Error: Axis not implemented yet");
 
 
             

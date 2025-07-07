@@ -9,7 +9,6 @@
     // aggiungere skybox
     // capire come fare baking delle textures
     // capire meglio come gestire ombre
-    // aggiungere luna
     // pulire codice delle mesh
     // aggiungere ombre alla palla
 
@@ -19,14 +18,14 @@
 
 // Dinamica di gioco
     // definire Settings del gioco
-        // possibilità di giocare con mouse o con tastiera
         // diverso frame rate
         // presenza o meno di luci
         // presenza o meno di rumori
         // presenza o meno di sfondo
         // presenza o meno di fuochi d'artificio
         // dimensione della palla
-        // aggiungere le vite
+        // [OPT] possibilità di giocare con mouse o con tastiera
+    // aggiungere le vite
 
 //gestire livelli
     // fare livello new york
@@ -57,7 +56,6 @@
 // [OPT]
     // fare normalizzazione del mouse
     // aggiungere elementi dinamici sullo sfondo
-    // 
 
 
     //città
@@ -132,7 +130,7 @@ async function load_TXT_sphere(){
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-let fps = 10;
+let fps = 20;
 var max_possible_age_part = fps*3;
 var min_possible_age_part = fps*2;
 
@@ -276,7 +274,7 @@ class Game {
         // draw background
         for (const bck_mesh of this.bck_meshes){
             this.meshdrawer.setMesh(bck_mesh);
-            this.meshdrawer.draw(view_matrix.traspose().mult(bck_mesh.model_matrix));
+            this.meshdrawer.draw(bck_mesh.model_matrix, view_matrix);
         }
         // draw ball
         this.balldrawer.setMesh(this.ball);

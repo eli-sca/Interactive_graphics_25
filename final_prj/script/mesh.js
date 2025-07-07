@@ -157,7 +157,7 @@ class Mesh{
         const scale_mat = new Scaling(this.scale_percentage);
         const trasformation_mat = trans_mat.mult(rot_mat).mult(scale_mat);
         
-        return trasformation_mat;
+        return trasformation_mat.traspose();
     }
 
 }

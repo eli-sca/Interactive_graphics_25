@@ -83,13 +83,6 @@ optionsBtn_pause.addEventListener('click', () => {
 
 
 
-
-
-
-
-
-
-
 function startLevel(city) {
     if(DEBUG){console.log(`Avvio livello: ${city}`)};
     // Nascondi overlay e avvia il gioco

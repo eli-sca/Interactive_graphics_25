@@ -8,7 +8,8 @@ class MeshDrawer
 		this.prog = InitShaderProgram(gl, meshVS, meshFS );
 		
 		// Get the ids of the uniform variables in the shaders
-		this.mvp_pos = gl.getUniformLocation( this.prog, 'mvp' );
+		this.mod_pos = gl.getUniformLocation( this.prog, 'mod' );
+		this.view_pos = gl.getUniformLocation( this.prog, 'view' );
 		// poi c'è da mettere anche 
 		// this.mv = gl.getUniformLocation( this.prog, 'mv' );
 		// this.norm_mat = gl.getUniformLocation( this.prog, 'norm_mat' );
@@ -80,12 +81,13 @@ class MeshDrawer
 	// This method is called to draw the triangular mesh.
 	// The argument is the transformation matrix, the same matrix returned
 	// by the GetModelViewProjection function above.
-	draw( matr)
+	draw( model_matr, view_matr)
 	{
-		let trans = matr.traspose().data;
+		let trans = model_matr.data;
 		// [TO-DO] Complete the WebGL initializations before drawing
 		gl.useProgram( this.prog );
-		gl.uniformMatrix4fv( this.mvp_pos, false, trans );
+		gl.uniformMatrix4fv( this.mod_pos, false, trans );
+		gl.uniformMatrix4fv( this.view_pos, false, view_matr.data );
 
 		gl.bindBuffer( gl.ARRAY_BUFFER, this.vertbuffer );
 		gl.vertexAttribPointer( this.vertPos, 3, gl.FLOAT, false, 0, 0 );
@@ -141,7 +143,8 @@ var meshVS = `
 	attribute vec3 vertPos;
 	attribute vec3 norm;
 	attribute vec2 txc;
-	uniform mat4 mvp;
+	uniform mat4 mod;
+	uniform mat4 view;
 
 	varying vec3 vertPosTransf;
 	varying vec3 normTransf;
@@ -149,9 +152,9 @@ var meshVS = `
 
 		void main()
 		{
-			gl_Position = mvp * vec4(vertPos,1);
+			gl_Position = view* mod * vec4(vertPos,1);
 			texCoord = txc;
-			vec4 vertPos4 = mvp * vec4(vertPos, 1.0); // da modificare con mv
+			vec4 vertPos4 = mod* vec4(vertPos, 1.0); // da modificare con mv
 			vertPosTransf = vec3(vertPos4) / vertPos4.w;;
 			normTransf = norm;
 		}

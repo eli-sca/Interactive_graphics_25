@@ -86,7 +86,7 @@ function UpdateCanvasSize()
 	canvas.style.height = height + 'px';
 	gl.viewport( 0, 0, canvas.width, canvas.height );
 	// UpdateProjectionMatrix();
-	view_matrix = new Projection(canvas, 0.5, 300, 60 );
+	view_matrix = new Projection(canvas, 0.5, 300, 60 ).traspose();
 }
 
 function from_grad_to_rad(grad) {

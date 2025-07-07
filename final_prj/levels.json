@@ -42,18 +42,11 @@
         },
         "new_york": {
             "bckground_objs": [
+                
                 {
-                "name": "liberty_statue",
-                "file_obj": "liberty2",
-                "texture": "Liberty_tex.bmp",
-                "posizione": { "x": 1, "y": 0, "z": -1.5},
-                "rotazione": { "x": 0, "y": -50, "z": 0 },
-                "scaling": 1
-                },
-                {
-                "name": "ocean4",
+                "name": "ocean6",
                 "file_obj": "ocean",
-                "texture": "ocean.png",
+                "texture": "ocean_low.png",
                 "posizione": { "x": 0, "y": -0.5, "z": -1},
                 "rotazione": { "x": 0, "y": 0, "z": 0 },
                 "scaling": 5

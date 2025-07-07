@@ -34,14 +34,14 @@ class Ball extends Mesh{
         this.traslation_matrix = new Translation(this.position);
         console.log(this.scale_percentage);
         this.scale_matrix =new Scaling(this.scale_percentage);
-        this.model_matrix = this.traslation_matrix.mult(this.scale_matrix);
+        this.model_matrix = this.traslation_matrix.mult(this.scale_matrix).traspose();
     }
 
     update_position_data(new_position){
         // new_position in format Vector3([x, y, z]);
         this.position = new_position;
         this.traslation_matrix = new Translation(this.position);
-        this.model_matrix = this.traslation_matrix.mult(this.scale_matrix);
+        this.model_matrix = this.traslation_matrix.mult(this.scale_matrix).traspose();
     }
 
     is_under_horizont(){
@@ -146,8 +146,7 @@ class BallDrawer
 	// by the GetModelViewProjection function above.
 	draw( matr)
 	{
-		let trans = matr.traspose().data;
-		// [TO-DO] Complete the WebGL initializations before drawing
+		let trans = matr.data;
 		gl.useProgram( this.prog );
 		gl.uniformMatrix4fv( this.mvp_pos, false, trans );
 
@@ -195,14 +194,14 @@ class Target extends Mesh{
         // rotation is identity matrix
         this.traslation_matrix = new Translation(this.position);
         this.scale_matrix = new Scaling(this.scale_percentage);
-        this.model_matrix = this.traslation_matrix.mult(this.scale_matrix);
+        this.model_matrix = this.traslation_matrix.mult(this.scale_matrix).traspose();
     }
 
     update_position_data(new_position){
         // new_position in format Vector3([x, y, z]);
         this.position = new_position;
         this.traslation_matrix = new Translation(this.position);
-        this.model_matrix = this.traslation_matrix.mult(this.scale_matrix);
+        this.model_matrix = this.traslation_matrix.mult(this.scale_matrix).traspose();
     }
 
 }
@@ -436,26 +435,7 @@ class FireworksDrawer {
         gl.enableVertexAttribArray(this.a_position);
     }}
 
-function strideSkipTake(array, size, skipCount, takeCount) {
-  const result = [];
-  const total = skipCount + takeCount;
-  let blockIndex = 0;
 
-  for (let i = 0; i <= array.length - size; i += size) {
-    const indexInCycle = blockIndex % total;
-
-    if (indexInCycle >= skipCount) {
-      // Include il blocco corrente
-      for (let j = 0; j < size; j++) {
-        result.push(array[i + j]);
-      }
-    }
-
-    blockIndex++;
-  }
-
-  return result;
-}
 
 var fireworkVS = `
     attribute vec3 a_position;
