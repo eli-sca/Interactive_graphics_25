@@ -3,11 +3,10 @@
 // TODO
 
 //WebGL
-    // Gestire trasformazioni geometriche (da studiare)
-        // definire matrice di proiezione 
     // [OPT] gestire trasformazione background
     
 // disegna mesh 
+    // aggiungere skybox
     // capire come fare baking delle textures
     // capire meglio come gestire ombre
     // aggiungere luna
@@ -89,7 +88,8 @@
     // extra: anziche fireworks sono palline di polvere di holi
 
     // 
-
+    // Gestire trasformazioni geometriche -- FATTO
+        // definire matrice di proiezione 
 //////////////////////////////////////////////////////////////
 
 
@@ -145,6 +145,8 @@ class Shader{
         this.createProgram();
     }
 }
+
+var view_matrix = null;
 
 
 
@@ -274,7 +276,7 @@ class Game {
         // draw background
         for (const bck_mesh of this.bck_meshes){
             this.meshdrawer.setMesh(bck_mesh);
-            this.meshdrawer.draw(bck_mesh.model_matrix);
+            this.meshdrawer.draw(view_matrix.traspose().mult(bck_mesh.model_matrix));
         }
         // draw ball
         this.balldrawer.setMesh(this.ball);

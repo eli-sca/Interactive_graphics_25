@@ -29,7 +29,7 @@ class MeshDrawer
 		gl.useProgram( this.prog );
         gl.uniform1i(this.show_pos, false);
 		gl.uniform3f(this.lightdir_pos, 1.0 , 0.0, 0.0);
-		gl.uniform1f(this.shininess_pos, 200 );
+		gl.uniform1f(this.shininess_pos, 20 );
 
 	}
 	
@@ -172,8 +172,8 @@ var meshVS = `
 
 		void main()
 		{
-			float Ka=0.80;   // Ambient reflection coefficient
-			float Kd=0.70;   // Diffuse reflection coefficient
+			float Ka=0.40;   // Ambient reflection coefficient
+			float Kd=0.60;   // Diffuse reflection coefficient
 			float Ks=0.50;   // Specular reflection coefficient
 
 			vec3 ambientColor;

@@ -231,3 +231,24 @@ class Scaling extends Matrix {
         super(data, 4, 4);
     }
 }
+
+class Projection extends Matrix {
+    constructor(c, n, f, fov_angle=60 ) {
+        let aspect_ratio = c.width / c.height;
+        let fov = from_grad_to_rad(fov_angle);
+        let ang = Math.tan(fov/2);
+
+        let t = ang*n;
+        let b = -t;
+        let r = t*aspect_ratio;
+        let l = -r;
+
+        let data = [
+            2*n/(r-l), 0, (r+l)/(r-l), 0,
+            0, 2*n/(t-b), (t+b)/(t-b), 0,
+            0, 0, -(f+n)/(f-n), -2*f*n/(f-n),
+            0, 0, -1, 0
+        ];
+        super(data, 4, 4);
+    }
+}

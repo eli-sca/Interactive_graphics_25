@@ -46,11 +46,18 @@
                 "name": "liberty_statue",
                 "file_obj": "liberty2",
                 "texture": "Liberty_tex.bmp",
-                "posizione": { "x": 0.5, "y": -0.1, "z": 0.5},
-                "rotazione": { "x": 0, "y": 195, "z": 0 },
-                "scaling": 0.8
+                "posizione": { "x": 1, "y": 0, "z": -1.5},
+                "rotazione": { "x": 0, "y": -50, "z": 0 },
+                "scaling": 1
+                },
+                {
+                "name": "ocean4",
+                "file_obj": "ocean",
+                "texture": "ocean.png",
+                "posizione": { "x": 0, "y": -0.5, "z": -1},
+                "rotazione": { "x": 0, "y": 0, "z": 0 },
+                "scaling": 5
                 }
-                
             ]
         },
         "il_cairo": {

@@ -138,24 +138,24 @@ class Skybox {
 
 
 var cubeVS = `
-attribute vec4 a_position;
-varying vec4 v_position;
-void main() {
-  v_position = a_position;
-  gl_Position = a_position;
-  gl_Position.z = 1.0;
+    attribute vec4 a_position;
+    varying vec4 v_position;
+    void main() {
+    v_position = a_position;
+    gl_Position = a_position;
+    gl_Position.z = 1.0;
 }
 `;
 
 var cubeFS = `
-precision mediump float;
+    precision mediump float;
 
-uniform samplerCube u_skybox;
-uniform mat4 u_viewDirectionProjectionInverse;
+    uniform samplerCube u_skybox;
+    uniform mat4 u_viewDirectionProjectionInverse;
 
-varying vec4 v_position;
-void main() {
-  vec4 t = u_viewDirectionProjectionInverse * v_position;
-  gl_FragColor = textureCube(u_skybox, normalize(t.xyz / t.w));
-}
+    varying vec4 v_position;
+    void main() {
+    vec4 t = u_viewDirectionProjectionInverse * v_position;
+    gl_FragColor = textureCube(u_skybox, normalize(t.xyz / t.w));
+    }
 `;
