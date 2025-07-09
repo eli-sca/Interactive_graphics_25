@@ -38,7 +38,8 @@ class Loader{
             const data = await response.json()
             
             // Accesso ai dati del livello selezionato
-            const livelloSelezionato = level_name; // o ottenuto dall'utente
+            const livelloSelezionato = level_name; 
+            skyboxLocation = data.levels[livelloSelezionato].skybox;
             const oggetti = data.levels[livelloSelezionato].bckground_objs;
 
             for (const obj of oggetti) {

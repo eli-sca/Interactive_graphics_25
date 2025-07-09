@@ -98,6 +98,8 @@ const DEBUG = true;
 // Ball OBJ
 var TXT_BALL = "";
 
+var skyboxLocation = null;
+
 // const colors = [
 //     {name: 'red', min: [230, 219, 210], max: [215, 35, 40]},
 //     {name: 'green', min: [227, 228, 219], max: [86, 99, 53]},
@@ -212,7 +214,8 @@ class Game {
             console.log('Start game');
             this.bck_meshes = await loader.loadLevelBackgroundOBJs(name_city);
             this.ball = new Ball(this.dt*0.001, this.dimension_ball);
-
+            this.skybox.setGeometry();
+            this.skybox.set_cubetexture(skyboxLocation);
             this.start();
         }
         else {
@@ -268,9 +271,8 @@ class Game {
 
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-        this.skybox.setGeometry();
-        this.skybox.set_cubetexture();
-        // skybox.drawcube(this.time);
+        
+        this.skybox.drawcube(this.time);
         // draw background
         for (const bck_mesh of this.bck_meshes){
             this.meshdrawer.setMesh(bck_mesh);

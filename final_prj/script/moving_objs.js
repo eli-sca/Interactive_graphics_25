@@ -226,7 +226,7 @@ var ballVS = `
 
 		void main()
         {
-            gl_FragColor =  ballColor;
+            gl_FragColor =  ballColor ;
 		}
 
 		`;

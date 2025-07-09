@@ -238,12 +238,12 @@ class Projection extends Matrix {
     constructor(c, n, f, fov_angle=60 ) {
         let aspect_ratio = c.width / c.height;
         let fov = from_grad_to_rad(fov_angle);
-        let ang = Math.tan(fov/2);
+        let ang = Math.tan(fov/2); 
 
-        let t = ang*n;
-        let b = -t;
-        let r = t*aspect_ratio;
-        let l = -r;
+        let t = ang*n; //top
+        let b = -t; //bottom
+        let r = t*aspect_ratio; //right
+        let l = -r; //left
 
         let data = [
             2*n/(r-l), 0, (r+l)/(r-l), 0,
