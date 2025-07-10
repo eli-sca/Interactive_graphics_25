@@ -5,6 +5,12 @@ const retryBtn = document.getElementById('retryBtn');
 const changeLevelBtn = document.getElementById('changeLevelBtn');
 const optionsBtn = document.getElementById('optionsBtn');
 const finalScore = document.getElementById('finalScore');
+const overlay_opt = document.getElementById('overlay_options');
+const closeOptionsBtn = document.getElementById('closeOptionsBtn');
+const soundCheckbox = document.getElementById("soundCheckbox");
+const visualEffectsCheckbox = document.getElementById("visualEffectsCheckbox");
+const staticBgCheckbox = document.getElementById("staticBgCheckbox");
+const difficultySelect = document.getElementById("difficultySelect");
 
 
 // Show game over window and set final score
@@ -18,6 +24,14 @@ function hideGameOver() {
     overlay_go.style.display = 'none';
 }
 
+function showOptions(){
+    overlay_opt.style.display = 'flex';
+}
+
+function closeOptions(){
+    overlay_opt.style.display = 'none';
+}
+
 
 // Play again same level
 retryBtn.addEventListener('click', () => {
@@ -25,6 +39,10 @@ retryBtn.addEventListener('click', () => {
     hideGameOver();
     game.restart_same_city();
 
+});
+
+closeOptionsBtn.addEventListener('click', () => {
+    closeOptions();
 });
 
 
@@ -38,7 +56,7 @@ changeLevelBtn.addEventListener('click', () => {
 
 optionsBtn.addEventListener('click', () => {
     if (DEBUG) {console.log('Options clicked!');}
-    // qui apri menu opzioni
+    showOptions();
 });
 
 
@@ -78,7 +96,7 @@ stop_pause.addEventListener('click', () => {
 
 optionsBtn_pause.addEventListener('click', () => {
     if (DEBUG) {console.log('Options clicked!');}
-    // qui apri menu opzioni
+    showOptions();
 });
 
 
@@ -90,3 +108,30 @@ function startLevel(city) {
     game = new Game();
     game.load_game_start(city);
 }
+
+
+
+// let difficulty = 2; // 0 = easy, 1 = normal, 2 = hard, 3 = extreme
+// let fps = 20;
+
+
+soundCheckbox.addEventListener("change", () => {
+    sounds = soundCheckbox.checked;
+});
+
+
+visualEffectsCheckbox.addEventListener("change", () => {
+    extra_effects = visualEffectsCheckbox.checked;
+});
+
+staticBgCheckbox.addEventListener("change", () => {
+    static_bg = staticBgCheckbox.checked;
+});
+
+
+
+
+difficultySelect.addEventListener("change", (e) => {
+    const selectedDifficulty = e.target.value;
+    console.log("Difficulty changed to:", selectedDifficulty);
+});

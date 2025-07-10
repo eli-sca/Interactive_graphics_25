@@ -6,7 +6,6 @@
     // [OPT] gestire trasformazione background
     
 // disegna mesh 
-    // aggiungere skybox
     // capire come fare baking delle textures
     // capire meglio come gestire ombre
     // pulire codice delle mesh
@@ -20,9 +19,7 @@
     // definire Settings del gioco
         // diverso frame rate
         // presenza o meno di luci
-        // presenza o meno di rumori
-        // presenza o meno di sfondo
-        // presenza o meno di fuochi d'artificio
+        // presenza o meno di sfondo animato
         // dimensione della palla
         // [OPT] possibilità di giocare con mouse o con tastiera
     // aggiungere le vite
@@ -52,6 +49,8 @@
     // trova rumore scintille 
     // aggiungi rumore agli eventi
     // [opt] gestisci diversi timing dei rumori
+    // aggiungere audio sottofondo
+        // gestire controlli audio
 
 // [OPT]
     // fare normalizzazione del mouse
@@ -66,8 +65,8 @@
 
     //Venezia
     // canzone: rondo veneziano
-    // difficoltà: barca che oscilla, bevuto troppo -> vista alterata
-    // oggetti: aperol, barca, edifici di venezia, colonna con leone o leoni
+    // difficoltà: barca che oscilla
+    // oggetti: barca, edifici di venezia, colonna con leone o leoni
 
     //New York
     // canzone: fireworks 
@@ -96,9 +95,17 @@ const DEBUG = true;
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Ball OBJ
-var TXT_BALL = "";
+let TXT_BALL = "";
 
-var skyboxLocation = null;
+let skyboxLocation = null;
+
+
+// OPTIONS SETTINGS
+let sounds = true;
+let extra_effects = true;
+let static_bg = false;
+let difficulty = "hard";
+let fps = 20;
 
 // const colors = [
 //     {name: 'red', min: [230, 219, 210], max: [215, 35, 40]},
@@ -110,17 +117,16 @@ var skyboxLocation = null;
 // ];
 
 const colors = [
-    {name: 'red', min: [255, 255, 255], max: [241, 52, 72]},
-    {name: 'green', min: [255, 255, 255], max: [0, 246, 150]},
-    {name: 'pink', min: [255, 255, 255], max: [236, 39, 155]},
-    {name: 'yellow', min: [255, 255,255], max: [243, 155, 67]},
-    {name: 'blue', min: [255, 255, 255], max: [62, 52, 200]},
-    {name: 'brown', min: [255, 255, 255], max: [255, 139, 56]}
+    {name: 'red', min: [1, 1, 1], max: [241, 52, 72]},
+    {name: 'green', min: [1, 1, 1], max: [0, 246, 150]},
+    {name: 'pink', min: [1, 1, 1], max: [236, 39, 155]},
+    {name: 'yellow', min: [1, 1, 1], max: [243, 155, 67]},
+    {name: 'blue', min: [1, 1, 1], max: [62, 52, 200]},
+    {name: 'brown', min: [1, 1, 1], max: [255, 139, 56]}
 ];
 
 
 for (let i = 0; i < colors.length; i++) {
-    colors[i].min = colors[i].min.map(v => v / 255);
     colors[i].max = colors[i].max.map(v => v / 255);
 }
 
@@ -132,13 +138,13 @@ async function load_TXT_sphere(){
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-let fps = 20;
+
 var max_possible_age_part = fps*3;
 var min_possible_age_part = fps*2;
 
 
 class Shader{
-    constructor(gl, vertexShader, fragmentShader) {
+    constructor(gl, vertexShader, fragmentShader){
         this.gl = gl;
         this.vertexShader = vertexShader;
         this.fragmentShader = fragmentShader;
@@ -175,6 +181,9 @@ class Game {
         this.balldrawer = new BallDrawer();
         this.fireworksdrawer = new FireworksDrawer();
         this.skybox = new Skybox();
+        this.soundplayer = new SoundPlayer();
+        
+
 
         this.is_game_ongoing = false;
         this.intervalId = null;
@@ -186,6 +195,7 @@ class Game {
         // settings
         this.city = null;
         this.fps = fps;
+
         // this.flag_shadow = False;
         // this.flag_fog = False;
         // this.flag_reflexion = False;
@@ -213,6 +223,7 @@ class Game {
             this.started = true;
             console.log('Start game');
             this.bck_meshes = await loader.loadLevelBackgroundOBJs(name_city);
+            this.soundplayer.load_track("fireworks.mp3");
             this.ball = new Ball(this.dt*0.001, this.dimension_ball);
             this.skybox.setGeometry();
             this.skybox.set_cubetexture(skyboxLocation);
@@ -243,17 +254,15 @@ class Game {
 
     start () {
         console.log('Start game');
+        if (sounds) {this.soundplayer.playMusic();}
         pauseIcon.style.display = 'inline-block';
         this.intervalId =  setInterval(() => this.gamesteps(), this.dt); // setInterval(ball.setSimValues(this.dt), this.dt);
         this.is_game_ongoing = true;
     }
 
     gamesteps(){
-        
         this.frame++;
         this.time += this.dt;
-        // console.log(this.frame);
-        // console.log(this.dt);
         if (this.ball.is_under_horizont()) {
             this.game_over();}
         this.draw_frame();
@@ -305,6 +314,7 @@ class Game {
 
     }
     pause () {
+        this.soundplayer.pauseMusic();
         clearInterval(this.intervalId);
         pauseIcon.style.display = 'none';
         this.is_game_ongoing = false;
@@ -369,12 +379,12 @@ window.addEventListener('keydown', function(event) {
 
 
 
-window.addEventListener('keydown', function(event) {
-    if (event.key === 's' || event.key === 'S') {
-        if(DEBUG){console.log('s pressed');}
-        game.load_game_start("new_york");
-    }
-});
+// window.addEventListener('keydown', function(event) {
+//     if (event.key === 's' || event.key === 'S') {
+//         if(DEBUG){console.log('s pressed');}
+//         game.load_game_start("new_york");
+//     }
+// });
 
 
 // If resize set again canvas size and webgl settings
@@ -386,14 +396,13 @@ InitWebGL();
 
 let game;
 let loader = new Loader();
-let name_city = "new_york";
+// let name_city = "new_york";
 
 load_TXT_sphere();
 
 
 
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -430,4 +439,7 @@ function GetModelViewProjection( projectionMatrix, translationX, translationY, t
 	mvp = MatrixMult( mvp, rot)
 	return mvp;
 }
+
+
+
 

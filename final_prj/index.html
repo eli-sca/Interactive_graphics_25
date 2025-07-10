@@ -7,6 +7,10 @@
     <link rel="stylesheet" href="./css/style.css">
 </head>
 <body>
+    <audio id="backgroundMusic" loop>
+        <source src="" type="audio/mpeg">
+        Browser doesn't support audio elements.
+    </audio>
     <div id="output"></div>
     <canvas id="canvas"></canvas>
     <div id="score">Points: 0</div>
@@ -60,7 +64,7 @@
 
                 <!-- Levels -->
                 <div class="level-card">
-                    <div class="tooltip">City: Venice<br>Difficoltà: ★★★☆☆</div>
+                    <div class="tooltip">City: Venice<br>Difficulty: Boat perturbation</div>
                     <img src="./imgs/Venice_img.jpg" alt="Venice" />
                     <button onclick="startLevel('venice')">Play</button>
                 </div>
@@ -77,11 +81,11 @@
                     <button onclick="startLevel('new_york')">Play</button>
                 </div>
 
-                <div class="level-card">
+                <!-- <div class="level-card">
                     <div class="tooltip">City: Cairo<br>Difficulty: ★★★★☆</div>
                     <img src="./imgs/il_cairo_img.jpg" alt="Il Cairo" />
                     <button onclick="startLevel('il_cairo')">Play</button>
-                </div>
+                </div> -->
 
                 <div class="level-card">
                     <div class="tooltip">Starry Night<br>Difficulty: ★★★★☆</div>
@@ -95,10 +99,53 @@
     <!-- End Select level window-->
 
 
+    <!-- Start Options window -->
+    <div id="overlay_options">
+        <div id="optionsBox">
+            <h1>OPTIONS</h1>
+            <div class="options-content">
+
+                <label class="option-row">
+                    <input type="checkbox" id="visualEffectsCheckbox" checked>
+                    Extra visual effects
+                </label>
+
+                <label class="option-row">
+                    <input type="checkbox" id="soundCheckbox" checked>
+                    Sound effects and music
+                </label>
+
+                <label class="option-row">
+                    <input type="checkbox" id="staticBgCheckbox">
+                    Static background
+                </label>
+
+                <label class="option-row">
+                    Difficulty:
+                    <select id="difficultySelect">
+                        <option value="easy">Easy</option>
+                        <option value="normal" >Normal</option>
+                        <option value="hard" selected>Hard</option>
+                        <option value="extreme">Extreme</option>
+                    </select>
+                </label>
+
+            </div>
+
+            <!-- Riga pulsanti -->
+            <div class="button-row">
+                <button id="closeOptionsBtn">Close</button>
+            </div>
+        </div>
+    </div>
+    <!-- End Options window -->
+
+
 
     <!-- Scripts-->
     <script src="./script/algebra.js"> </script>
     <script src="./script/utils.js"> </script>
+    <script src="./script/sound_player.js"> </script>
     <script src="./script/loader.js"> </script>
     <script src="./script/mesh.js"> </script>
     <script src="./script/moving_objs.js"> </script>

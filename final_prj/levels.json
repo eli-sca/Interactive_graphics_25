@@ -2,35 +2,29 @@
     "levels": {
         "rome": {
             "bckground_objs": [
-                {
-                "name": "colosseo",
-                "file_obj": "colosseo",
-                "texture": "colosseo.png",
-                "posizione": { "x": 0, "y": 0, "z": 0 },
-                "rotazione": { "x": 90, "y": 90, "z": 90 },
-                "scaling": 1.5
-                }
             ],
             "skybox": {
                 "folder" : "rome",
                 "dim" : 1024
-            }
+            },
+            "soundtrack": "fireworks.mp3"
         },
         "venice": {
             "bckground_objs": [
                 {
                 "name": "boat",
-                "file_obj": "gondola",
-                "texture": "gondola_texture.jpeg",
-                "posizione": { "x": 0, "y": -0.3, "z": -0.3},
-                "rotazione": { "x": 0, "y": 120, "z": 0 },
-                "scaling": 1
+                "file_obj": "gond2",
+                "texture": "ocean.png",
+                "posizione": { "x": 0.2, "y": -0.2, "z": -0.5},
+                "rotazione": { "x": 90, "y": 180, "z": 190 },
+                "scaling": 4
                 }
             ],
             "skybox": {
                 "folder":"venice",
                 "dim" : 2048
-            }
+            },
+            "soundtrack": "fireworks.mp3"
         },
         "new_york": {
             "bckground_objs": [
@@ -47,7 +41,8 @@
             "skybox": {
                 "folder":"new_york",
                 "dim" : 2048
-            }
+            },
+            "soundtrack": "fireworks.mp3"
         },
         "il_cairo": {
             "bckground_objs": [
@@ -88,7 +83,8 @@
             "skybox": {
                 "folder":"stars",
                 "dim" : 4096
-            }
+            },
+            "soundtrack": "fireworks.mp3"
         }
     }
 }

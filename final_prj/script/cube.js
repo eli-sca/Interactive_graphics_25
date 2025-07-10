@@ -97,31 +97,33 @@ class Skybox {
         let angle;
         let camera_angle;
         if (this.skybox_folder == "venice"){
-            angle = 40;
-            camera_angle = 0.66;
+            angle = 28;
+            camera_angle = 1.0;
         }
         else{
             angle = 60;
-            camera_angle = time* .00001;
+            camera_angle = time* .00002;
 
         }
 
         var projectionMatrix = m4.perspective(angle*Math.PI/180, aspect, 1, 2.5);
 
         // camera going in circle 2 units from origin looking at origin
-        console.log(time);
-        var cameraPosition = [Math.sin(camera_angle), 0, Math.cos(camera_angle)];
-        var target = [0, 0, 0];
-        var up = [0, 1, 0];
+        let cameraPosition = [Math.cos(camera_angle), 0, Math.sin(camera_angle)];// Math.sin(camera_angle)];
+        let target = [0, 0, 0];
+        let up = [0, 1, 0];
         // Compute the camera's matrix using look at.
-        var cameraMatrix = m4.lookAt(cameraPosition, target, up);
+        let cameraMatrix = m4.lookAt(cameraPosition, target, up);
 
         // Make a view matrix from the camera matrix.
-        var viewMatrix = m4.inverse(cameraMatrix);
+        let viewMatrix = m4.inverse(cameraMatrix);
         if (this.skybox_folder == "venice"){
             // Add roll movement due to the boat
-            var roll = Math.sin(time * 0.001) * 0.02;  
-            var rollMatrix = m4.zRotation(roll);
+            let roll = Math.sin(time * 0.001) * 0.02;  
+            let rollMatrix1 = m4.zRotation(roll);
+            roll = Math.cos(time * 0.001) * 0.02;  
+            let rollMatrix2 = m4.yRotation(roll);
+            let rollMatrix = m4.multiply(rollMatrix1, rollMatrix2);
             viewMatrix = m4.multiply(viewMatrix, rollMatrix);
         }
 
