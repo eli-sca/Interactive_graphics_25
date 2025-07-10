@@ -101,7 +101,7 @@ let skyboxLocation = null;
 
 
 // OPTIONS SETTINGS
-let sounds = true;
+let sounds = false;
 let extra_effects = true;
 let static_bg = false;
 let difficulty = "hard";
@@ -139,8 +139,8 @@ async function load_TXT_sphere(){
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-var max_possible_age_part = fps*3;
-var min_possible_age_part = fps*2;
+var max_possible_age_part = fps*2;
+var min_possible_age_part = fps*1.5;
 
 
 class Shader{
@@ -222,8 +222,15 @@ class Game {
         if (!this.started){
             this.started = true;
             console.log('Start game');
-            this.bck_meshes = await loader.loadLevelBackgroundOBJs(name_city);
-            this.soundplayer.load_track("fireworks.mp3");
+            let data = await loader.loadjson(name_city);
+            // Accesso ai dati del livello selezionato
+            skyboxLocation = data.levels[name_city].skybox;
+            const oggetti = data.levels[name_city].bckground_objs;
+            const soundtrack = data.levels[name_city].soundtrack;
+            this.bck_meshes = await loader.loadLevelBackgroundOBJs(oggetti);
+
+
+            this.soundplayer.load_track(soundtrack);
             this.ball = new Ball(this.dt*0.001, this.dimension_ball);
             this.skybox.setGeometry();
             this.skybox.set_cubetexture(skyboxLocation);

@@ -96,22 +96,38 @@ class Skybox {
         var aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
         let angle;
         let camera_angle;
+        let target
+        let up 
         if (this.skybox_folder == "venice"){
             angle = 28;
             camera_angle = 1.0;
+            target = [0, 0, 0];
+            up = [0, 1, 0];
         }
-        else{
-            angle = 60;
-            camera_angle = time* .00002;
+        else if (this.skybox_folder == "rome"){
+            angle = 70;
+            camera_angle = 5;
+            target = [0, 0, 0];
+            up = [0, 1, 0];
+        }else if (this.skybox_folder == "new_york"){
+            angle = 50;
+            camera_angle = 5;
+            target = [0, 0.35, 1];
+            up = [+0.02, 0.8, 0];
 
+        }
+        else {
+            angle = 60;
+            camera_angle = -time*0.0001;
+            target = [0, 0, 0];
+            up = [0, 1, 0];
         }
 
         var projectionMatrix = m4.perspective(angle*Math.PI/180, aspect, 1, 2.5);
 
         // camera going in circle 2 units from origin looking at origin
         let cameraPosition = [Math.cos(camera_angle), 0, Math.sin(camera_angle)];// Math.sin(camera_angle)];
-        let target = [0, 0, 0];
-        let up = [0, 1, 0];
+        
         // Compute the camera's matrix using look at.
         let cameraMatrix = m4.lookAt(cameraPosition, target, up);
 

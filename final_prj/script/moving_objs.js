@@ -237,11 +237,11 @@ var ballVS = `
 // FIREWORK
 
 class Particle {
-    constructor(starting_position = new Vector3([0, 0, 0]), speed = 0.1, type = 0) {
+    constructor(starting_position = new Vector3([0, 0, 0]), speed = 0.005, type = 0, phi = 0) {
         this.position = starting_position.copy();
         this.history = [starting_position.copy().data];
         let theta = 6*Math.PI*Math.random();
-        let phi = Math.PI*Math.random();
+        
         let fuzzyness;
         // this.velocity = new Vector3([Math.cos(theta), 1.5*Math.sin(theta), 0]).mult_scalar(speed);
         // this.velocity = new Vector3([Math.pow(Math.sin(theta), 3), 1/16*(13 * Math.cos(theta)- 5 * Math.cos(2 * theta)- 2 * Math.cos(3 * theta)- Math.cos(4 * theta)), 0]).mult_scalar(speed); // cuore
@@ -255,8 +255,9 @@ class Particle {
                 param = this.sphere();
                 break;
             case 1: // circle
+                
                 fuzzyness= getRandomArbitrary(0.8, 1.0);
-                param = this.circle();
+                param = this.circle(phi);
                 break;
             case 2: // heart
                 fuzzyness= getRandomArbitrary(0.8, 1.0);
@@ -291,12 +292,12 @@ class Particle {
         return parametrization;
     }
 
-    circle(){
+    circle(phi){
         let theta = 2*Math.PI*Math.random();
         let parametrization = {
-            x: Math.cos(theta),
-            y: Math.sin(theta),
-            z: 0.0
+            x: Math.cos(phi)*Math.cos(theta),
+            y: Math.cos(phi)*Math.sin(theta),
+            z: Math.sin(phi)
         }
         return parametrization;
     }
@@ -333,9 +334,9 @@ class Firework {
         this.model_matrix = model_matrix;
         this.history_particles = [];
 
-        this.instantiate_particles(getRandomInt(0, 2));
+        this.instantiate_particles(getRandomInt(0, 1));
 
-        this.acceleration = new Vector3([0, -0.1, 0]);
+        this.acceleration = new Vector3([0, -0.3, 0]);
         this.part_pos = [];
         this.firework_life = 0;
         this.lines = [];
@@ -351,15 +352,9 @@ class Firework {
                 break;
             case 1: // caso firework con particelle di diversa dimensione
                 let rnd = getRandomInt(0, 3);
+                let phi = Math.PI*Math.random();
                 for (let i = 0; i < this.num_particles; i++) {
-                    this.particles.push(new Particle(this.starting_position, 0.2, rnd));
-                }
-                break;
-            case 2: // caso firework composto
-                
-                for (let i = 0; i < this.num_particles/2; i++) {
-                    this.particles.push(new Particle(this.starting_position, 0.2, 0));
-                    this.particles.push(new Particle(this.starting_position, 0.5, 1));
+                    this.particles.push(new Particle(this.starting_position, 0.2, rnd, phi));
                 }
                 break;
         }

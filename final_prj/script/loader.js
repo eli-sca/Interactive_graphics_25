@@ -30,17 +30,27 @@ class Loader{
         return meshes
     }
 
-
-    async loadLevelBackgroundOBJs(level_name){
-        let meshes = [];
+    async loadjson(level_name){
         try {
             let response = await fetch('../levels.json')
-            const data = await response.json()
+            const data = await response.json();
+            return data;
+        }
+        catch (error) {
+            console.error(`Error loading json:`, error);
+        }
+    }
+
+    async loadLevelBackgroundOBJs(oggetti){
+        let meshes = [];
+        try {
+            // let response = await fetch('../levels.json')
+            // const data = await response.json()
             
-            // Accesso ai dati del livello selezionato
-            const livelloSelezionato = level_name; 
-            skyboxLocation = data.levels[livelloSelezionato].skybox;
-            const oggetti = data.levels[livelloSelezionato].bckground_objs;
+            // // Accesso ai dati del livello selezionato
+            // const livelloSelezionato = level_name; 
+            // skyboxLocation = data.levels[livelloSelezionato].skybox;
+            // const oggetti = data.levels[livelloSelezionato].bckground_objs;
 
             for (const obj of oggetti) {
                 if (DEBUG){console.log(`Start ${obj.name} loading`);

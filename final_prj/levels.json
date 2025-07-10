@@ -24,18 +24,26 @@
                 "folder":"venice",
                 "dim" : 2048
             },
-            "soundtrack": "fireworks.mp3"
+            "soundtrack": "rondo_veneziano.mp3"
         },
         "new_york": {
             "bckground_objs": [
                 
                 {
+                "name": "statue",
+                "file_obj": "liberty2",
+                "texture": "Liberty_tex.bmp",
+                "posizione": { "x": 3.5, "y": 0.3, "z": -4},
+                "rotazione": { "x": 0, "y": -40, "z": 0 },
+                "scaling": 3
+                },
+                {
                 "name": "ocean",
-                "file_obj": "ocean2",
-                "texture": "ocean_low.png",
-                "posizione": { "x": 0, "y": -0.4, "z": -1},
+                "file_obj": "ocean",
+                "texture": "ocean.png",
+                "posizione": { "x": 0, "y": -1, "z": -1.5},
                 "rotazione": { "x": 0, "y": 0, "z": 0 },
-                "scaling": 1
+                "scaling": 10
                 }
             ],
             "skybox": {
