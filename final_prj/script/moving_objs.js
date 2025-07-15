@@ -13,8 +13,7 @@ class Ball extends Mesh{
         // physics data
         this.position = new Vector3([0, -1, -1]);
         this.velocity = new Vector3([1, 0.1 , 0]);
-        this.acceleration = new Vector3([0, -1, 0]).mult_scalar(dt);
-        // this.acceleration = new Vector3([0, 0.0, 0]);
+        this.acceleration = new Vector3([0, -0.1, 0]).mult_scalar(1/dt);
         this.mass = 1;
         this.radius = 1;
         this.time = 0;
@@ -230,6 +229,8 @@ var ballVS = `
 		}
 
 		`;
+
+        
 
 
 

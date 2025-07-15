@@ -13,7 +13,6 @@ class MeshDrawer
 		// poi c'è da mettere anche 
 		// this.mv = gl.getUniformLocation( this.prog, 'mv' );
 		// this.norm_mat = gl.getUniformLocation( this.prog, 'norm_mat' );
-        this.show_pos = gl.getUniformLocation(this.prog, 'show_pos');
 		this.lightdir_pos =  gl.getUniformLocation(this.prog, 'lightPos');
 		this.shininess_pos =  gl.getUniformLocation(this.prog, 'shininessVal');
 
@@ -28,7 +27,6 @@ class MeshDrawer
 		this.normbuffer = gl.createBuffer();
 
 		gl.useProgram( this.prog );
-        gl.uniform1i(this.show_pos, false);
 		gl.uniform3f(this.lightdir_pos, 1.0 , 0.0, 0.0);
 		gl.uniform1f(this.shininess_pos, 20 );
 
@@ -98,7 +96,6 @@ class MeshDrawer
 	setTexture( img )
 	{
 		gl.useProgram( this.prog );
-		gl.uniform1i(this.show_pos, true);
 		// Create a texture.
 		var texture = gl.createTexture();
 		gl.bindTexture(gl.TEXTURE_2D, texture);
@@ -116,7 +113,6 @@ class MeshDrawer
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
 
 		// some uniform parameter(s) of the fragment shader, so that it uses the texture.
-		gl.uniform1i(this.show_pos, true);
 
 	}
 
@@ -163,7 +159,6 @@ var meshVS = `
 	// Fragment shader source code
 	var meshFS = `
 		precision mediump float;
-        uniform bool show_pos;
 		uniform sampler2D tex;
 		uniform vec3 lightPos;
 		uniform float shininessVal;
@@ -181,11 +176,8 @@ var meshVS = `
 
 			vec3 ambientColor;
 
-			if (show_pos){
-				ambientColor = vec3(texture2D(tex, texCoord));
-			} else {
-				ambientColor =  vec3(0.46 ,0.46, 0.46);
-			}
+			ambientColor = vec3(texture2D(tex, texCoord));
+
 			
 			vec3 diffuseColor =vec3(1.0, 1.0, 1.0);
 			vec3 specularColor = vec3(1.0, 1.0, 1.0);

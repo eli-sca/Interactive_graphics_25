@@ -17,23 +17,15 @@
 
 // Dinamica di gioco
     // definire Settings del gioco
-        // diverso frame rate
         // presenza o meno di luci
         // presenza o meno di sfondo animato
-        // dimensione della palla
-        // [OPT] possibilità di giocare con mouse o con tastiera
-    // aggiungere le vite
 
 //gestire livelli
     // fare livello new york
     // [OPT] fare livello roma
     // [OPT] fare livello venezia
-    // [OPT] aggiungere le difficoltà -> modificare le diff in html
-
-// fare sfondo
 
 // fare esplosione fuoco d'artificio
-    //settare dinamica e colore, posizione
     // fare scintille, 
         //capire come fare scintille
     // [OPT] capire se si può fare con altre mesh
@@ -49,11 +41,8 @@
     // trova rumore scintille 
     // aggiungi rumore agli eventi
     // [opt] gestisci diversi timing dei rumori
-    // aggiungere audio sottofondo
-        // gestire controlli audio
 
 // [OPT]
-    // fare normalizzazione del mouse
     // aggiungere elementi dinamici sullo sfondo
 
 
@@ -78,11 +67,6 @@
     // difficoltà: tempesta di sabbia
     // oggetti: sabbia, piramidi sfinge 
 
-    // India
-    // canzone: o una indiana o quella di ed shiran
-    // difficoltà: altra polvere da attorno
-    // oggetti: palazzo indiano nello sfondo
-    // extra: anziche fireworks sono palline di polvere di holi
 
     // 
     // Gestire trasformazioni geometriche -- FATTO
@@ -156,24 +140,6 @@ var view_matrix = null;
 
 
 
-
-
-// function MousePos()
-// {
-// 	return {
-// 		"x":  ( event.clientX / canvas.clientWidth  ) * 2 - 1,
-// 		y: -( event.clientY / canvas.clientHeight ) * 2 + 1
-// 	};
-// }
-
-// window.addEventListener('click', function() {
-//     game.clicked = true;
-//     game.position_click = MousePos
-//     console.log(`Clic a: X=${game.position_click("x")}, Y=${game.position_click["y"]}`);
-// })
-
-
-
 class Game {
     constructor() {
         // utils
@@ -188,9 +154,9 @@ class Game {
         this.is_game_ongoing = false;
         this.intervalId = null;
         this.started = false;
+        this.life = 3;
 
         this.dimension_ball =0.05;
-        // this.dimension_ball =0.1;
 
         // settings
         this.city = null;
@@ -223,17 +189,20 @@ class Game {
             this.started = true;
             console.log('Start game');
             let data = await loader.loadjson(name_city);
-            // Accesso ai dati del livello selezionato
+
+            // Load data of selected level
             skyboxLocation = data.levels[name_city].skybox;
             const oggetti = data.levels[name_city].bckground_objs;
             const soundtrack = data.levels[name_city].soundtrack;
+
             this.bck_meshes = await loader.loadLevelBackgroundOBJs(oggetti);
-
-
             this.soundplayer.load_track(soundtrack);
-            this.ball = new Ball(this.dt*0.001, this.dimension_ball);
             this.skybox.setGeometry();
             this.skybox.set_cubetexture(skyboxLocation);
+
+
+            this.ball = new Ball(this.dt*0.001, this.dimension_ball);
+            
             this.start();
         }
         else {
@@ -246,6 +215,7 @@ class Game {
         this.is_game_ongoing = false;
         this.intervalId = null;
         this.started = false;
+        this.life = 3;
 
         this.points = 0;
         this.frame = 0;
@@ -340,6 +310,7 @@ class Game {
     explode() {
         this.fireworks.push(new Firework(this.dt*0.001, this.ball.position.copy(), new Matrix([1, 0, 0, 0, 0,1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1])));
         this.points += this.compute_new_points(this.ball.distance_from_target);
+        if (this.life == 0) {this.game_over();}
         document.getElementById('score').textContent = "POINTS: " + this.points;
 
         this.ball.launch_new_ball();
@@ -358,6 +329,8 @@ class Game {
             return 1;
         }
         else {
+            this.life--;
+            updateLifepoints(this.life);
             return 0;
         }
     }

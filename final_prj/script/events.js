@@ -1,5 +1,4 @@
 // Scandiuzzi Elisa 2069444
-
 const overlay_go = document.getElementById('overlay_go');
 const retryBtn = document.getElementById('retryBtn');
 const changeLevelBtn = document.getElementById('changeLevelBtn');
@@ -11,29 +10,58 @@ const soundCheckbox = document.getElementById("soundCheckbox");
 const visualEffectsCheckbox = document.getElementById("visualEffectsCheckbox");
 const staticBgCheckbox = document.getElementById("staticBgCheckbox");
 const difficultySelect = document.getElementById("difficultySelect");
+const fpsSelect = document.getElementById("fpsSelect");
+const lifepoints = document.getElementsByClassName("hearts");
+const overlay_pause = document.getElementById('overlay_pause');
+const restartBtn_pause = document.getElementById('restartBtn_pause');
+const stop_pause = document.getElementById('stop_pause');
+const optionsBtn_pause = document.getElementById('optionsBtn_pause');
+const pauseScore = document.getElementById('pauseScore');
 
+function updateLifepoints(life) { 
+    // Change tesxt of life points div
+    let new_string = "";
+    switch (life) {
+        case 3:
+            new_string = "♡ ♡ ♡";
+            break;
+        case 2:
+            new_string = "♡ ♡";
+            break;
+        case 1:
+            new_string = "♡";
+            break;
+        default:
+            new_string = "♡ ♡ ♡";
+            break;
+    }
+    lifepoints[0].textContent = new_string;
+}
 
 // Show game over window and set final score
 function showGameOver(points) {
     finalScore.textContent = "POINTS: " + points; // show final points
-    overlay_go.style.display = 'flex';
+    overlay_go.style.display = 'flex'; //show div
 }
 
-// Hide game over window
+// hide game over window
 function hideGameOver() {
     overlay_go.style.display = 'none';
 }
 
+// Show options div
 function showOptions(){
     overlay_opt.style.display = 'flex';
 }
 
-function closeOptions(){
+// Hide options div
+closeOptionsBtn.addEventListener('click', () => {
     overlay_opt.style.display = 'none';
-}
+});
 
 
-// Play again same level
+
+// Play again same level, clickable from game over
 retryBtn.addEventListener('click', () => {
     if (DEBUG) {console.log('Play again clicked!');}
     hideGameOver();
@@ -41,40 +69,30 @@ retryBtn.addEventListener('click', () => {
 
 });
 
-closeOptionsBtn.addEventListener('click', () => {
-    closeOptions();
-});
 
-
-
-changeLevelBtn.addEventListener('click', () => {
+// Change level, show level selector, clickable from game over
+changeLevelBtn.addEventListener('click', () => { 
     if (DEBUG) {console.log('Change level clicked!');}
-    // qui cambi livello o mostri menu livelli
     hideGameOver();
     document.getElementById('levelOverlay').style.display = 'flex';
 });
 
+
+// Open Options, clickable from game over
 optionsBtn.addEventListener('click', () => {
     if (DEBUG) {console.log('Options clicked!');}
     showOptions();
 });
 
 
-const overlay_pause = document.getElementById('overlay_pause');
-const restartBtn_pause = document.getElementById('restartBtn_pause');
-const stop_pause = document.getElementById('stop_pause');
-const optionsBtn_pause = document.getElementById('optionsBtn_pause');
-const pauseScore = document.getElementById('pauseScore');
-
-
-// pause options
+// Pause icon click
 pauseIcon.addEventListener('click', () => {
         game.toggle();
         pauseScore.textContent = "POINTS: " + game.points; // show final points
         overlay_pause.style.display = 'flex';
     });
 
-// Hide pause window
+// Hide pause window, used in toggle
 function hidePause() {
     overlay_pause.style.display = 'none';
 }
@@ -87,51 +105,73 @@ restartBtn_pause.addEventListener('click', () => {
 });
 
 
-
+// Stop playing, clickable from pause
 stop_pause.addEventListener('click', () => {
     if (DEBUG) {console.log('Stop clicked!');}
     hidePause();
     game.game_over();
     });
 
+// Show options, clickable from pause
 optionsBtn_pause.addEventListener('click', () => {
     if (DEBUG) {console.log('Options clicked!');}
     showOptions();
 });
 
-
-
+// selected level, hide div and start game
 function startLevel(city) {
     if(DEBUG){console.log(`Avvio livello: ${city}`)};
-    // Nascondi overlay e avvia il gioco
     document.getElementById('levelOverlay').style.display = 'none';
     game = new Game();
     game.load_game_start(city);
 }
 
+////////////////////////////////////////////////////////////////////////
+// Checkboxes options
 
-
-// let difficulty = 2; // 0 = easy, 1 = normal, 2 = hard, 3 = extreme
-// let fps = 20;
-
-
+// Sound
 soundCheckbox.addEventListener("change", () => {
     sounds = soundCheckbox.checked;
 });
 
-
+//Extra visual effects
 visualEffectsCheckbox.addEventListener("change", () => {
     extra_effects = visualEffectsCheckbox.checked;
 });
 
+// Static Background
 staticBgCheckbox.addEventListener("change", () => {
     static_bg = staticBgCheckbox.checked;
 });
 
-
-
-
+// Difficulty -> change ball dimension and restart game
 difficultySelect.addEventListener("change", (e) => {
-    const selectedDifficulty = e.target.value;
-    console.log("Difficulty changed to:", selectedDifficulty);
+    difficulty = e.target.value;
+    switch(difficulty){
+        case "easy":
+            game.dimension_ball =0.3;
+            break;
+        case "normal":
+            game.dimension_ball =0.1;
+            break;
+        case "hard":
+            game.dimension_ball =0.05;
+            break;
+        case "extreme":
+            game.dimension_ball =0.02;
+            break;
+    }
+    console.log("Difficulty changed to:", difficulty);
+    game.restart_same_city();
+    game.pause();
+});
+
+
+// FPS -> change fps and restart game
+fpsSelect.addEventListener("change", (e) => {
+    fps = e.target.value;
+    console.log("Fps changed to:", fps);
+    console.log("Difficulty changed to:", difficulty);
+    game.restart_same_city();
+    game.pause();
 });

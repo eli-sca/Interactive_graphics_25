@@ -8,6 +8,12 @@
     <link rel="stylesheet" href="./css/style.css">
 </head>
 <body>
+    <div id="lifeContainer">
+    <span class="life-label">Life:</span>
+    <span class="hearts">
+        ♡ ♡ ♡
+    </span>
+</div>
     <audio id="backgroundMusic" loop>
         <source src="" type="audio/mpeg">
         Browser doesn't support audio elements.
@@ -122,7 +128,17 @@
                 </label>
 
                 <label class="option-row">
-                    Difficulty:
+                FPS:
+                <select id="fpsSelect">
+                    <option value=10>10</option>
+                    <option value=20 selected>20</option>
+                    <option value=30>30</option>
+                    <option value=60>60</option>
+                </select>
+            </label>
+
+                <label class="option-row">
+                    Difficulty (Start new game):
                     <select id="difficultySelect">
                         <option value="easy">Easy</option>
                         <option value="normal" >Normal</option>
@@ -130,6 +146,8 @@
                         <option value="extreme">Extreme</option>
                     </select>
                 </label>
+
+                
 
             </div>
 

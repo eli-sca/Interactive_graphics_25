@@ -376,3 +376,30 @@ canvas {
     background-color: #FFA500;
     color: #111;
 }
+
+
+#lifeContainer {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, 0.7);
+    color: #FFA500; 
+    padding: 10px 16px;
+    font-family: 'Digital', monospace;
+    font-size: 24px;
+    border-radius: 10px;
+    letter-spacing: 2px;
+    text-shadow: 0 0 4px #FF8C00;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 10;
+}
+.life-label {
+    font-weight: bold;
+}
+
+.hearts {
+    font-size: 24px;
+}
