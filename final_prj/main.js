@@ -2,36 +2,11 @@
 
 // TODO
 
-//WebGL
-    // [OPT] gestire trasformazione background
-    
-// disegna mesh 
-    // capire come fare baking delle textures
-    // capire meglio come gestire ombre
-    // pulire codice delle mesh
-    // aggiungere ombre alla palla
-
-// [OPT] aggiungere luna che si muove e così cambia l'illuminazione
-
-// fare palla del colore del fuoco d'artificio
-
 // Dinamica di gioco
     // definire Settings del gioco
-        // presenza o meno di luci
         // presenza o meno di sfondo animato
+        // togliere setting visual effects
 
-//gestire livelli
-    // fare livello new york
-    // [OPT] fare livello roma
-    // [OPT] fare livello venezia
-
-// fare esplosione fuoco d'artificio
-    // fare scintille, 
-        //capire come fare scintille
-    // [OPT] capire se si può fare con altre mesh
-
-// gestire luci
-    // riflesso su acqua delle scintille
 
 // togliere file obj che non si usano
 
@@ -73,8 +48,7 @@
         // definire matrice di proiezione 
 //////////////////////////////////////////////////////////////
 
-
-const DEBUG = true;
+const DEBUG = false;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -85,8 +59,7 @@ let skyboxLocation = null;
 
 
 // OPTIONS SETTINGS
-let sounds = false;
-let extra_effects = true;
+let sounds = true;
 let static_bg = false;
 let difficulty = "hard";
 let fps = 20;
@@ -101,12 +74,12 @@ let fps = 20;
 // ];
 
 const colors = [
-    {name: 'red', min: [1, 1, 1], max: [241, 52, 72]},
-    {name: 'green', min: [1, 1, 1], max: [0, 246, 150]},
-    {name: 'pink', min: [1, 1, 1], max: [236, 39, 155]},
-    {name: 'yellow', min: [1, 1, 1], max: [243, 155, 67]},
-    {name: 'blue', min: [1, 1, 1], max: [62, 52, 200]},
-    {name: 'brown', min: [1, 1, 1], max: [255, 139, 56]}
+    {name: 'red', min: [1, 1, 1], max: [255, 10, 13]},
+    {name: 'green', min: [1, 1, 1], max: [0, 246, 46]},
+    {name: 'pink', min: [1, 1, 1], max: [255, 7, 155]},
+    {name: 'yellow', min: [1, 1, 1], max: [255, 217, 7]},
+    {name: 'blue', min: [1, 1, 1], max: [7, 160, 255]},
+    {name: 'brown', min: [1, 1, 1], max: [255, 127, 7]}
 ];
 
 
@@ -125,16 +98,6 @@ async function load_TXT_sphere(){
 
 var max_possible_age_part = fps*2;
 var min_possible_age_part = fps*1.5;
-
-
-class Shader{
-    constructor(gl, vertexShader, fragmentShader){
-        this.gl = gl;
-        this.vertexShader = vertexShader;
-        this.fragmentShader = fragmentShader;
-        this.createProgram();
-    }
-}
 
 var view_matrix = null;
 
@@ -156,7 +119,7 @@ class Game {
         this.started = false;
         this.life = 3;
 
-        this.dimension_ball =0.05;
+        this.dimension_ball = 0.5 ;
 
         // settings
         this.city = null;
@@ -216,6 +179,7 @@ class Game {
         this.intervalId = null;
         this.started = false;
         this.life = 3;
+        updateLifepoints(this.life);
 
         this.points = 0;
         this.frame = 0;
@@ -231,7 +195,10 @@ class Game {
 
     start () {
         console.log('Start game');
-        if (sounds) {this.soundplayer.playMusic();}
+        // rocket_sound();
+        if (sounds) {
+            this.soundplayer.playMusic();
+            bg_fireworks_sound_play();}
         pauseIcon.style.display = 'inline-block';
         this.intervalId =  setInterval(() => this.gamesteps(), this.dt); // setInterval(ball.setSimValues(this.dt), this.dt);
         this.is_game_ongoing = true;
@@ -257,7 +224,6 @@ class Game {
 
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-        
         this.skybox.drawcube(this.time);
         // draw background
         for (const bck_mesh of this.bck_meshes){
@@ -266,20 +232,23 @@ class Game {
         }
         // draw ball
         this.balldrawer.setMesh(this.ball);
-        this.balldrawer.draw(this.ball.model_matrix);
+        this.balldrawer.draw(this.ball.model_matrix, view_matrix);
 
         
 
         this.balldrawer.setMesh(this.ball.target);
-        this.balldrawer.draw(this.ball.target.model_matrix);
+        this.balldrawer.draw(this.ball.target.model_matrix, view_matrix);
         for (let i = this.fireworks.length -1; i >= 0; i--) {
             if (this.fireworks[i].has_particles()) {
                 this.fireworks[i].update(this.dt*0.001);
                 // this.debug_point =  this.fireworks[0].part_pos;
                 this.fireworksdrawer.setFirework(this.fireworks[i]);
-                this.fireworksdrawer.draw(false);
+                this.fireworksdrawer.draw(false, view_matrix);
+                this.fireworksdrawer.setFirework(this.fireworks[i]);
+                this.fireworksdrawer.draw(true, view_matrix);
+                // let proiez = new Matrix([1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, -2, 0, 0, 0, 1], 4, 4);
                 // this.fireworksdrawer.setFirework(this.fireworks[i]);
-                // this.fireworksdrawer.draw(true);
+                // this.fireworksdrawer.draw(true, view_matrix.mult(proiez));
                 
             }
             else {
@@ -292,6 +261,7 @@ class Game {
     }
     pause () {
         this.soundplayer.pauseMusic();
+        stop_sounds();
         clearInterval(this.intervalId);
         pauseIcon.style.display = 'none';
         this.is_game_ongoing = false;
@@ -308,11 +278,14 @@ class Game {
     }
 
     explode() {
-        this.fireworks.push(new Firework(this.dt*0.001, this.ball.position.copy(), new Matrix([1, 0, 0, 0, 0,1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1])));
+        let pos = this.ball.position.copy();
+        pos.z -= 0.5;
+        this.fireworks.push(new Firework(this.dt*0.001, pos, new Matrix([1, 0, 0, 0, 0,1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]),this.ball.color_num));
+        explosion_sound();
         this.points += this.compute_new_points(this.ball.distance_from_target);
         if (this.life == 0) {this.game_over();}
         document.getElementById('score').textContent = "POINTS: " + this.points;
-
+        // rocket_sound();
         this.ball.launch_new_ball();
 
     }
@@ -340,86 +313,13 @@ class Game {
 
 
 
-// Event listeners
-window.addEventListener("keydown", (event) => {
-    if (event.code === "Space") {
-        event.preventDefault(); // Impedisce lo scroll della pagina
-        if(DEBUG){console.log("Space pressed");}    
-        game.explode();}
-    });
-
-
-// Pause if click on 'p' or if i click on the pause icon
-window.addEventListener('keydown', function(event) {
-    if (event.key === 'p' || event.key === 'P') {
-        if(DEBUG){console.log('p pressed');}
-        game.toggle();
-    }
-});
-
-
-
-// window.addEventListener('keydown', function(event) {
-//     if (event.key === 's' || event.key === 'S') {
-//         if(DEBUG){console.log('s pressed');}
-//         game.load_game_start("new_york");
-//     }
-// });
-
-
-// If resize set again canvas size and webgl settings
-window.addEventListener("resize", (event) => { UpdateCanvasSize(); })
-
-
 
 InitWebGL();
 
 let game;
 let loader = new Loader();
-// let name_city = "new_york";
 
 load_TXT_sphere();
-
-
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-function GetModelViewProjection( projectionMatrix, translationX, translationY, translationZ, rotationX, rotationY )
-{
-	// Modify the code below to form the transformation matrix.
-
-	// traslation
-	var trans = [
-		1, 0, 0, 0,
-		0, 1, 0, 0,
-		0, 0, 1, 0,
-		translationX, translationY, translationZ, 1
-	];
-
-	// X rotation
-	var rotX = [
-		1, 0, 0, 0,
-		0, Math.cos(rotationX), Math.sin(rotationX), 0,
-		0, -Math.sin(rotationX), Math.cos(rotationX), 0,
-		0, 0, 0, 1
-	];
-
-	// Y rotation
-	var rotY = [
-		Math.cos(rotationY), 0, -Math.sin(rotationY), 0,
-		0, 1, 0, 0,
-		Math.sin(rotationY), 0, Math.cos(rotationY), 0,
-		0, 0, 0, 1
-	];
-
-	var rot = MatrixMult(rotX, rotY)
-	var mvp = MatrixMult( projectionMatrix, trans );
-	mvp = MatrixMult( mvp, rot)
-	return mvp;
-}
-
 
 
 

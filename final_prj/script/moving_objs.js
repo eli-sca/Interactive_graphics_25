@@ -7,18 +7,20 @@
 
 class Ball extends Mesh{
     constructor(dt, scale_percentage = 1) {
-        super(TXT_BALL, "Ball", scale_percentage, new Vector3([0, 1, 0]),  0, 0,  0, false);
-
-        this.color = new Vector([1.0, 0.0, 0, 1.0]);
+        
+        super(TXT_BALL, "Ball", scale_percentage, new Vector3([0, -0.5, -10]),  0, 0,  0, false);
+        this.starting_position = new Vector3([0, -5, -10]);
+        this.color_num = getRandomInt(0, colors.length-1);
+        this.color = new Vector([colors[this.color_num].max[0], colors[this.color_num].max[1], colors[this.color_num].max[2], 1.0]);
         // physics data
-        this.position = new Vector3([0, -1, -1]);
+        this.position = this.starting_position.copy();
         this.velocity = new Vector3([1, 0.1 , 0]);
-        this.acceleration = new Vector3([0, -0.1, 0]).mult_scalar(1/dt);
+        this.acceleration = new Vector3([0, -1, 0]).mult_scalar(dt);
         this.mass = 1;
         this.radius = 1;
         this.time = 0;
         this.dt = dt;
-        this.final_time =  getRandomInt(fps, Math.floor(fps*1.5)); // num frames
+        this.final_time =  getRandomInt(fps*3, Math.floor(fps*5)); // num frames
 
         this.distance_from_target = 0;
         
@@ -31,7 +33,6 @@ class Ball extends Mesh{
         // Model matrix
         // rotation is identity matrix
         this.traslation_matrix = new Translation(this.position);
-        console.log(this.scale_percentage);
         this.scale_matrix =new Scaling(this.scale_percentage);
         this.model_matrix = this.traslation_matrix.mult(this.scale_matrix).traspose();
     }
@@ -44,7 +45,7 @@ class Ball extends Mesh{
     }
 
     is_under_horizont(){
-        return this.position.data[1] < -1.00001;
+        return this.position.data[1] < this.starting_position.y-0.01;
     }
 
     compute_distance_from_target(){
@@ -52,7 +53,7 @@ class Ball extends Mesh{
     }
 
     setTarget(){
-        let new_position = new Vector3([getRandomArbitrary(-0.8, 0.8), getRandomArbitrary(0.0, 0.7), this.position.z]) //getRandomArbitrary(-0.5, 0.5)]);
+        let new_position = new Vector3([getRandomArbitrary(-6, 6), getRandomArbitrary(1, 4), this.position.z]) //getRandomArbitrary(-0.5, 0.5)]);
 
         this.target.update_position_data(new_position);
 
@@ -79,8 +80,9 @@ class Ball extends Mesh{
 
 
     launch_new_ball(){
-    
-        this.update_position_data(new Vector3([0, -1, 0]));
+        this.color_num = getRandomInt(0, colors.length-1);
+        this.color = new Vector([colors[this.color_num].max[0], colors[this.color_num].max[1], colors[this.color_num].max[2], 1.0]);
+        this.update_position_data(this.starting_position.copy());
         this.time = 0; 
         this.setTarget();
     }
@@ -99,16 +101,17 @@ class BallDrawer
 		
 		// Get the ids of the uniform variables in the shaders
 		this.mvp_pos = gl.getUniformLocation( this.prog, 'mvp' );
+        this.mod_pos = gl.getUniformLocation( this.prog, 'mod' );
         this.color_pos = gl.getUniformLocation( this.prog, 'ballColor' );
+        this.transparency_pos = gl.getUniformLocation( this.prog, 'transparency' );
         
 
 		// Get the ids of the vertex attributes in the shaders
 		this.vertPos = gl.getAttribLocation( this.prog, 'vertPos' );
-        this.txtcoordPos = gl.getAttribLocation(this.prog, 'txc');
-
+        this.normPos = gl.getAttribLocation( this.prog, 'norm' );
 		// Create the buffer objects
 		this.vertbuffer = gl.createBuffer();
-        this.txtcoordbuffer = gl.createBuffer();
+        this.normbuffer = gl.createBuffer();
 
 		gl.useProgram( this.prog );
 
@@ -133,54 +136,39 @@ class BallDrawer
 
 		gl.useProgram( this.prog );
         gl.uniform4fv(this.color_pos, new Float32Array(mesh.color.data));
+        gl.uniform1f(this.transparency_pos, mesh.color.data[3]);
 
 		gl.bindBuffer(gl.ARRAY_BUFFER, this.vertbuffer);
 		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertCoords), gl.DYNAMIC_DRAW );
-		
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.normbuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(mesh.vertex_normals), gl.DYNAMIC_DRAW );
 	}
 	
 	
 	// This method is called to draw the triangular mesh.
 	// The argument is the transformation matrix, the same matrix returned
 	// by the GetModelViewProjection function above.
-	draw( matr)
-	{
-		let trans = matr.data;
+	draw( matr_mod, view_matr )
+	{   
+        let mvp = matr_mod.mult(view_matr);
+
 		gl.useProgram( this.prog );
-		gl.uniformMatrix4fv( this.mvp_pos, false, trans );
+		gl.uniformMatrix4fv( this.mvp_pos, false, mvp.data);
+        gl.uniformMatrix4fv( this.mod_pos, false, matr_mod.data);
 
 		gl.bindBuffer( gl.ARRAY_BUFFER, this.vertbuffer );
 		gl.vertexAttribPointer( this.vertPos, 3, gl.FLOAT, false, 0, 0 );
 		gl.enableVertexAttribArray( this.vertPos );
 
+
+        gl.bindBuffer( gl.ARRAY_BUFFER, this.normbuffer );
+		gl.vertexAttribPointer( this.normPos, 3, gl.FLOAT, false, 0, 0 );
+		gl.enableVertexAttribArray( this.normPos );
+
 		gl.drawArrays( gl.TRIANGLES, 0, this.numTriangles );
 	}
 	
-	// This method is called to set the texture of the mesh.
-	// The argument is an HTML IMG element containing the texture data.
-	setTexture( img )
-	{
-		gl.useProgram( this.prog );
-		// Create a texture.
-		var texture = gl.createTexture();
-		gl.bindTexture(gl.TEXTURE_2D, texture);
-
-		// Upload the image into the texture.
-		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
-
-		gl.generateMipmap(gl.TEXTURE_2D);
-
-		// Set the parameters so we can render any size image.
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
-				
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST_MIPMAP_LINEAR);
-		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-
-		// [TO-DO] Now that we have a texture, it might be a good idea to set
-		// some uniform parameter(s) of the fragment shader, so that it uses the texture.
-
-	}
 
 }
 
@@ -188,7 +176,7 @@ class Target extends Mesh{
     constructor(scale_percentage = 1, position = new Vector3([0, 0, 0])){
         super(TXT_BALL, "Target-Ball", scale_percentage, position,  0, 0,  0, false);
         
-        this.color = new Vector([1.0, 1.0, 0, 0.3]);
+        this.color = new Vector([1.0, 1.0, 0, 0.4]);
         // Model matrix
         // rotation is identity matrix
         this.traslation_matrix = new Translation(this.position);
@@ -207,14 +195,19 @@ class Target extends Mesh{
 
 var ballVS = `
 	attribute vec3 vertPos;
-	attribute vec2 txc;
+    attribute vec3 norm;
 	uniform mat4 mvp;
+    uniform mat4 mod;
 
-	varying vec2 texCoord;
+    varying vec3 vertPosTransf;
+	varying vec3 normTransf;
 
 		void main()
 		{
 			gl_Position = mvp * vec4(vertPos,1);
+            vec4 vertPos4 = mod* vec4(vertPos, 1.0); 
+			vertPosTransf = vec3(vertPos4) / vertPos4.w;;
+			normTransf = norm;
 		}
 	`;
 
@@ -222,10 +215,50 @@ var ballVS = `
 	var ballFS = `
 		precision mediump float;
         uniform vec4 ballColor;
+        uniform float transparency;
+
+        varying vec3 vertPosTransf;
+		varying vec3 normTransf;
 
 		void main()
         {
-            gl_FragColor =  ballColor ;
+
+            vec3 lightPos = vec3(0.0, 1.0, 0.0);
+            float shininessVal = 50.0;
+
+            float Ka=0.40;   // Ambient reflection coefficient
+			float Kd=0.60;   // Diffuse reflection coefficient
+			float Ks=0.50;   // Specular reflection coefficient
+
+			vec3 ambientColor;
+
+			ambientColor = vec3(ballColor.x, ballColor.y, ballColor.z);
+
+			
+			vec3 diffuseColor =vec3(1.0, 1.0, 1.0);
+			vec3 specularColor = vec3(1.0, 1.0, 1.0);
+
+
+			vec3 N = normalize(normTransf);
+			vec3 L = normalize(lightPos);
+
+			// Lambert's cosine law
+			float lambertian = max(dot(N, L),0.0);
+			float specular = 0.0;
+			if(lambertian > 0.0) {
+				vec3 R = reflect(-L, N);      // Reflected light vector
+				vec3 V = normalize(-vertPosTransf); // Vector to viewer
+				
+				// Compute the specular term
+				float specAngle = max(dot(R, V), 0.0);
+				specular = pow(specAngle, shininessVal);
+			}
+
+			gl_FragColor =  
+                        vec4(Ka * ambientColor +
+                        Kd * lambertian * diffuseColor +
+								Ks * specular * specularColor, transparency);
+
 		}
 
 		`;
@@ -238,38 +271,33 @@ var ballVS = `
 // FIREWORK
 
 class Particle {
-    constructor(starting_position = new Vector3([0, 0, 0]), speed = 0.005, type = 0, phi = 0) {
+    constructor(starting_position = new Vector3([0, 0, 0]), speed = 1000, type = 0, phi = 0) {
         this.position = starting_position.copy();
         this.history = [starting_position.copy().data];
         let theta = 6*Math.PI*Math.random();
         
         let fuzzyness;
-        // this.velocity = new Vector3([Math.cos(theta), 1.5*Math.sin(theta), 0]).mult_scalar(speed);
-        // this.velocity = new Vector3([Math.pow(Math.sin(theta), 3), 1/16*(13 * Math.cos(theta)- 5 * Math.cos(2 * theta)- 2 * Math.cos(3 * theta)- Math.cos(4 * theta)), 0]).mult_scalar(speed); // cuore
-        // this.velocity = new Vector3([Math.cos(phi)*Math.cos(theta), Math.cos(phi)*Math.sin(theta), Math.sin(phi)]).mult_scalar(speed*fuzzyness);
-        // this.velocity = new Vector3([Math.cos(3*theta), Math.sin(2*theta), 0]).mult_scalar(speed*fuzzyness);
-        // this.velocity = new Vector3([Math.cos(theta)+5/2*Math.cos(2/3*theta), Math.sin(theta) - 5/2* Math.sin(2/3*theta), 0]).mult_scalar(speed*fuzzyness);
         let param;
         switch (type){
-            case 0: // sphere
-                fuzzyness= getRandomArbitrary(0.4, 1.0);
+            case  3: // sphere
+                fuzzyness= getRandomArbitrary(0.4, 1.5);
                 param = this.sphere();
                 break;
             case 1: // circle
                 
-                fuzzyness= getRandomArbitrary(0.8, 1.0);
+                fuzzyness= getRandomArbitrary(0.8, 1);
                 param = this.circle(phi);
                 break;
             case 2: // heart
-                fuzzyness= getRandomArbitrary(0.8, 1.0);
+                fuzzyness= getRandomArbitrary(0.8, 1);
                 param = this.heart();
                 break;
-            case 3: // star
-                fuzzyness= getRandomArbitrary(0.8, 1.0);
+            case 0: // star
+                fuzzyness= getRandomArbitrary(0.8, 1.5);
                 param = this.star();
                 break;
             default:
-                fuzzyness= getRandomArbitrary(0.8, 1.0);
+                fuzzyness= getRandomArbitrary(0.8, 1.5);
                 param = this.sphere();
                 break;
         }
@@ -325,19 +353,20 @@ class Particle {
 
 
 class Firework {
-    constructor(dt, starting_position = new Vector3([0, 0, 0]), model_matrix = new Matrix([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1])) {
+    constructor(dt, starting_position = new Vector3([0, 0, 0]), model_matrix = new Matrix([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]), color_num) {
         
         this.dt = dt; // in seconds
         this.starting_position = starting_position;
-        this.num_particles = 200;
+        this.num_particles = 1000;
         this.particles = [];
-        this.color = colors[getRandomInt(0, colors.length-1)];
+        this.dimensions = [];
+        this.color = colors[color_num];
         this.model_matrix = model_matrix;
         this.history_particles = [];
 
         this.instantiate_particles(getRandomInt(0, 1));
 
-        this.acceleration = new Vector3([0, -0.3, 0]);
+        this.acceleration = new Vector3([0, -0.1, 0]);
         this.part_pos = [];
         this.firework_life = 0;
         this.lines = [];
@@ -346,16 +375,18 @@ class Firework {
     instantiate_particles(type = 0) {
         switch (type){
             case 0: // caso firework standard a palla
-                this.num_particles = 1000;
+                this.num_particles = 2000;
                 for (let i = 0; i < this.num_particles; i++) {
-                    this.particles.push(new Particle(this.starting_position, 0.3, 0));
+                    this.particles.push(new Particle(this.starting_position, 2, 3));
+                    this.dimensions.push(getRandomInt(1,  3));
                 }
                 break;
             case 1: // caso firework con particelle di diversa dimensione
                 let rnd = getRandomInt(0, 3);
                 let phi = Math.PI*Math.random();
                 for (let i = 0; i < this.num_particles; i++) {
-                    this.particles.push(new Particle(this.starting_position, 0.2, rnd, phi));
+                    this.particles.push(new Particle(this.starting_position, 1, rnd, phi));
+                    this.dimensions.push(getRandomInt(1, 3));
                 }
                 break;
         }
@@ -371,6 +402,7 @@ class Firework {
             this.part_pos.push(...this.particles[i].position.data);
             if (this.firework_life> this.particles[i].time_life) {
                 this.particles.splice(i, 1); // se raggiunge la vità massima lo elimino
+                this.dimensions.splice(i, 1);
             } else {
                 // sistema dinamico per descrivere sistema di particelle
                 this.particles[i].velocity = this.particles[i].velocity.sum(this.acceleration.mult_scalar(this.dt));
@@ -390,11 +422,14 @@ class FireworksDrawer {
         this.prog = InitShaderProgram(gl, fireworkVS, fireworkFS);
         this.pos_buffer = gl.createBuffer();
         this.a_position = gl.getAttribLocation(this.prog, "a_position");
+        this.dim_buffer = gl.createBuffer();
+        this.a_dim = gl.getAttribLocation(this.prog, "a_dim");
         // this.color_pos = gl.getUniformLocation( this.prog, 'fw_color' );
         this.color_min_pos = gl.getUniformLocation( this.prog, 'fw_color_min' );
         this.color_max_pos = gl.getUniformLocation( this.prog, 'fw_color_max' );
         this.age_perc_pos = gl.getUniformLocation( this.prog, 'particle_age_perc' );
         this.flag_light_pos = gl.getUniformLocation( this.prog, 'is_light' );
+        this.view_pos = gl.getUniformLocation( this.prog, 'view' );
         this.firework_life = 0;
         this.numPoints = 0;
         
@@ -407,9 +442,14 @@ class FireworksDrawer {
         gl.bindBuffer(gl.ARRAY_BUFFER, this.pos_buffer);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(firework.part_pos), gl.DYNAMIC_DRAW);
 
-        
         gl.enableVertexAttribArray(this.a_position);
         gl.vertexAttribPointer(this.a_position, 3, gl.FLOAT, false, 0, 0);
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.dim_buffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(firework.dimensions), gl.DYNAMIC_DRAW);
+
+        gl.enableVertexAttribArray(this.a_dim);
+        gl.vertexAttribPointer(this.a_dim, 1, gl.FLOAT, false, 0, 0);
 
         // gl.uniform3fv(this.color_pos, new Float32Array(firework.color));
         gl.uniform3fv(this.color_min_pos, new Float32Array(firework.color.min));
@@ -417,15 +457,13 @@ class FireworksDrawer {
         gl.uniform1f(this.age_perc_pos, firework.firework_life/max_possible_age_part);
     }
 
-    draw(val) {
+    draw(val, view) {
         
         
-        gl.useProgram(this.prog);
-        gl.uniform1i(this.flag_light_pos, true);
-        // gl.bindBuffer(gl.ARRAY_BUFFER, this.pos_buffer);
+        gl.uniform1i(this.flag_light_pos, val);
+        gl.uniformMatrix4fv( this.view_pos, false, view.data );
 
-        gl.enableVertexAttribArray(this.a_position);
-        gl.vertexAttribPointer(this.a_position, 3, gl.FLOAT, false, 0, 0);
+        
 
         gl.drawArrays(gl.POINTS, 0, this.numPoints);
         gl.enableVertexAttribArray(this.a_position);
@@ -435,15 +473,17 @@ class FireworksDrawer {
 
 var fireworkVS = `
     attribute vec3 a_position;
+    attribute float a_dim;
     uniform bool is_light;
+    uniform mat4 view;
 
     void main() {
         if (is_light){
-            gl_Position = vec4(a_position, 1.0);
-            gl_PointSize = 3.0;
+            gl_Position = view*vec4(a_position, 1.0);
+            gl_PointSize = a_dim;
         }
         else{
-            gl_Position = vec4(a_position, 1.0);
+            gl_Position = view*vec4(a_position, 1.0);
             gl_PointSize = 1.0;
         }   
 }
@@ -467,8 +507,7 @@ var fireworkFS = `
         gl_FragColor = vec4(fw_color, 1.0-particle_age_perc);
     }
     else{
-        vec3 fw_color = mix(fw_color_min, fw_color_max , particle_age_perc);
-        gl_FragColor = vec4(fw_color, 1.0); 
+        gl_FragColor = vec4(fw_color_max, 1.0-particle_age_perc*particle_age_perc); 
     }
 }
 `;

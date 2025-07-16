@@ -10,6 +10,7 @@ class MeshDrawer
 		// Get the ids of the uniform variables in the shaders
 		this.mod_pos = gl.getUniformLocation( this.prog, 'mod' );
 		this.view_pos = gl.getUniformLocation( this.prog, 'view' );
+
 		// poi c'è da mettere anche 
 		// this.mv = gl.getUniformLocation( this.prog, 'mv' );
 		// this.norm_mat = gl.getUniformLocation( this.prog, 'norm_mat' );
@@ -82,7 +83,7 @@ class MeshDrawer
 	draw( model_matr, view_matr)
 	{
 		let trans = model_matr.data;
-		// [TO-DO] Complete the WebGL initializations before drawing
+		//Complete the WebGL initializations before drawing
 		gl.useProgram( this.prog );
 		gl.uniformMatrix4fv( this.mod_pos, false, trans );
 		gl.uniformMatrix4fv( this.view_pos, false, view_matr.data );
@@ -150,7 +151,7 @@ var meshVS = `
 		{
 			gl_Position = view* mod * vec4(vertPos,1);
 			texCoord = txc;
-			vec4 vertPos4 = mod* vec4(vertPos, 1.0); // da modificare con mv
+			vec4 vertPos4 = mod* vec4(vertPos, 1.0); 
 			vertPosTransf = vec3(vertPos4) / vertPos4.w;;
 			normTransf = norm;
 		}

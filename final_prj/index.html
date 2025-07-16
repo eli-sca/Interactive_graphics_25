@@ -14,10 +14,13 @@
         ♡ ♡ ♡
     </span>
 </div>
-    <audio id="backgroundMusic" loop>
+    <audio id="backgroundMusic" loop >
         <source src="" type="audio/mpeg">
         Browser doesn't support audio elements.
     </audio>
+    <audio id="explosion_sound" src="./audio/audio_effects/bang1.wav" preload="auto" ></audio>
+    <audio id="rocket_sound" src="./audio/audio_effects/rocket.wav" preload="auto"></audio>
+    <audio id="bg_fireworks_sound" src="./audio/audio_effects/bg_audio.wav" loop preload="auto"></audio>
     <div id="output"></div>
     <canvas id="canvas"></canvas>
     <div id="score">Points: 0</div>
@@ -76,14 +79,14 @@
                     <button onclick="startLevel('venice')">Play</button>
                 </div>
 
-                <div class="level-card">
+                <!-- <div class="level-card">
                     <div class="tooltip">City: Rome<br>Difficulty: ★★☆☆☆</div>
                     <img src="./imgs/rome_img.jpg" alt="Rome" />
                     <button onclick="startLevel('rome')">Play</button>
-                </div>
+                </div> -->
 
                 <div class="level-card">
-                    <div class="tooltip">City: New York<br>Difficulty: ★★★★☆</div>
+                    <div class="tooltip">City: New York<br>Difficulty: -</div>
                     <img src="./imgs/new_york_img.jpg" alt="New York" />
                     <button onclick="startLevel('new_york')">Play</button>
                 </div>
@@ -95,7 +98,7 @@
                 </div> -->
 
                 <div class="level-card">
-                    <div class="tooltip">Starry Night<br>Difficulty: ★★★★☆</div>
+                    <div class="tooltip">Starry Night<br>Difficulty: Sky Rotation</div>
                     <img src="./imgs/starry_night.jpg" alt="Starry Night" />
                     <button onclick="startLevel('starry_night')">Play</button>
                 </div>

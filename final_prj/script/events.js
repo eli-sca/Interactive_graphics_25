@@ -7,7 +7,6 @@ const finalScore = document.getElementById('finalScore');
 const overlay_opt = document.getElementById('overlay_options');
 const closeOptionsBtn = document.getElementById('closeOptionsBtn');
 const soundCheckbox = document.getElementById("soundCheckbox");
-const visualEffectsCheckbox = document.getElementById("visualEffectsCheckbox");
 const staticBgCheckbox = document.getElementById("staticBgCheckbox");
 const difficultySelect = document.getElementById("difficultySelect");
 const fpsSelect = document.getElementById("fpsSelect");
@@ -134,10 +133,6 @@ soundCheckbox.addEventListener("change", () => {
     sounds = soundCheckbox.checked;
 });
 
-//Extra visual effects
-visualEffectsCheckbox.addEventListener("change", () => {
-    extra_effects = visualEffectsCheckbox.checked;
-});
 
 // Static Background
 staticBgCheckbox.addEventListener("change", () => {
@@ -149,16 +144,16 @@ difficultySelect.addEventListener("change", (e) => {
     difficulty = e.target.value;
     switch(difficulty){
         case "easy":
-            game.dimension_ball =0.3;
+            game.dimension_ball =1.0;
             break;
         case "normal":
-            game.dimension_ball =0.1;
+            game.dimension_ball =0.7 ;
             break;
         case "hard":
-            game.dimension_ball =0.05;
+            game.dimension_ball =0.5;
             break;
         case "extreme":
-            game.dimension_ball =0.02;
+            game.dimension_ball =0.3;
             break;
     }
     console.log("Difficulty changed to:", difficulty);
@@ -175,3 +170,32 @@ fpsSelect.addEventListener("change", (e) => {
     game.restart_same_city();
     game.pause();
 });
+
+
+
+
+
+// Firework Explosion
+window.addEventListener("keydown", (event) => {
+    if (event.code === "Space") {
+        event.preventDefault(); // Impedisce lo scroll della pagina
+        if(DEBUG){console.log("Space pressed");}    
+        game.explode();}
+    });
+
+
+// // Pause if click on 'p'
+// window.addEventListener('keydown', function(event) {
+//     if (event.key === 'p' || event.key === 'P') {
+//         if(DEBUG){console.log('p pressed');}
+//         game.toggle();
+//     }
+// });
+
+
+
+// If resize set again canvas size and webgl settings
+window.addEventListener("resize", (event) => { UpdateCanvasSize(); })
+
+
+

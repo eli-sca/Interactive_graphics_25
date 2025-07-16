@@ -1,4 +1,15 @@
+// Elisa Scandiuzzi 2069444
+// Reference: https://webglfundamentals.org/webgl/lessons/webgl-skybox.html
+
 class Skybox {
+/*************  ✨ Windsurf Command ⭐  *************/
+/**
+ * Initializes a Skybox object by compiling and linking the shader program
+ * for rendering the skybox. It sets up locations for shader attributes and
+ * uniforms, and initializes the skybox folder as null.
+ */
+
+/*******  c0d2de5a-00c4-4457-803f-73756a17a20f  *******/
     constructor() {
         this.progr = InitShaderProgram(gl, cubeVS, cubeFS);
         this.positionLocation = gl.getAttribLocation(this.progr, "a_position");
@@ -125,8 +136,7 @@ class Skybox {
 
         var projectionMatrix = m4.perspective(angle*Math.PI/180, aspect, 1, 2.5);
 
-        // camera going in circle 2 units from origin looking at origin
-        let cameraPosition = [Math.cos(camera_angle), 0, Math.sin(camera_angle)];// Math.sin(camera_angle)];
+        let cameraPosition = [Math.cos(camera_angle), 0, Math.sin(camera_angle)];
         
         // Compute the camera's matrix using look at.
         let cameraMatrix = m4.lookAt(cameraPosition, target, up);
